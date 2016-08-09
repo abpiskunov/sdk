@@ -15,6 +15,7 @@
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)bin\obj\$(MSBuildProjectName)'))\</BaseIntermediateOutputPath>
 
     <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
+    <AuthenticodeCertificateName>Microsoft402</AuthenticodeCertificateName>
 
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">1.0.0</VersionPrefix>
     <!-- When running on Microbuild, this is set to "ymmdd.n". -->
