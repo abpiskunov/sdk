@@ -1,13 +1,13 @@
-<Project DefaultTargets="Build" xmln="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Import MicroBuild for projects that need to be signed -->
-  <Import Condition="''$(NeedsSigningToRelease)' == 'true'" Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props" />
-  <Import Condition="''$(NeedsSigningToRelease)' == 'true'" Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets" />
-  <VSLToolsPath Condition="'$(VSLToolsPath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..'))</VSLToolsPath>
+  <Import Condition="'$(NeedsSigningToRelease)' == 'true'" Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props" />
+  <Import Condition="'$(NeedsSigningToRelease)' == 'true'" Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets" />
 
 
   <!-- settings for strong name signing -->
   <PropertyGroup>
+    <VSLToolsPath Condition="'$(VSLToolsPath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..'))</VSLToolsPath>
     <MicroBuildSigningLibraryV2>$(BUILD_ARTIFACTSTAGINGDIRECTORY)\MicroBuild\Plugins\MicroBuild.Plugins.Signing.1.0.227\build\MicroBuild.Signing.dll</MicroBuildSigningLibraryV2>
     <MicroBuildSigningLibrary Condition="Exists('$(MicroBuildSigningLibraryV2)')">$(MicroBuildSigningLibraryV2)</MicroBuildSigningLibrary>
     <ShouldSignBuild Condition="'$(RunningInMicroBuild)' == 'true' AND '$(SignType)' == 'real'">true</ShouldSignBuild>
