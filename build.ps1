@@ -52,6 +52,8 @@ $env:PATH = "$env:DOTNET_INSTALL_DIR;$env:PATH"
 # Disable first run since we want to control all package sources
 $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 
+New-Item -ErrorAction Ignore -ItemType Directory -Path bin/Release
+
 # TODO: https://github.com/dotnet/sdk/issues/13 add back `/m` when the MSBuild hang is fixed
 dotnet build3 $RepoRoot\build\build.proj /nologo /p:Configuration=$Configuration /p:Platform=$Platform /fl "/flp:logfile=bin/Release/msbuild.log;verbosity=diagnostic"
 if($LASTEXITCODE -ne 0) { throw "Failed to build" }
