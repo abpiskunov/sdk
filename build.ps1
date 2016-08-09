@@ -53,5 +53,5 @@ $env:PATH = "$env:DOTNET_INSTALL_DIR;$env:PATH"
 $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 
 # TODO: https://github.com/dotnet/sdk/issues/13 add back `/m` when the MSBuild hang is fixed
-dotnet build3 $RepoRoot\build\build.proj /nologo /p:Configuration=$Configuration /p:Platform=$Platform
+dotnet build3 $RepoRoot\build\build.proj /nologo /p:Configuration=$Configuration /p:Platform=$Platform /fl /flp:logfile=msbuild.log;verbosity=diagnostic
 if($LASTEXITCODE -ne 0) { throw "Failed to build" }
