@@ -38,6 +38,9 @@ namespace Microsoft.NET.Build.Tasks
         [Required]
         public ITaskItem[] FileDependencies { get; set; }
 
+        [Required]
+        public ITaskItem[] PackageReferences { get; set; }
+
         public ITaskItem[] InputDiagnosticMessages { get; set; }
 
         [Output]
@@ -58,8 +61,13 @@ namespace Microsoft.NET.Build.Tasks
         private Dictionary<string, ItemMetadata> DependenciesWorld { get; set; }
                     = new Dictionary<string, ItemMetadata>(StringComparer.OrdinalIgnoreCase);
 
+        private HashSet<string> ImplicitPackageReferences { get; set; }
+                    = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         protected override void ExecuteCore()
         {
+            PopulateImplicitPackageReferences();
+
             PopulateTargets();
 
             PopulatePackages();
@@ -99,6 +107,27 @@ namespace Microsoft.NET.Build.Tasks
 
                 return newTaskItem;
             }).ToArray();
+        }
+
+        private void PopulateImplicitPackageReferences()
+        {
+            foreach(var packageReference in PackageReferences)
+            {
+                var isImplicitlyDefinedString = packageReference.GetMetadata(MetadataKeys.IsImplicitlyDefined);
+                if (string.IsNullOrEmpty(isImplicitlyDefinedString))
+                {
+                    continue;
+                }
+
+                bool isImplicitlyDefined;
+                if (!Boolean.TryParse(isImplicitlyDefinedString, out isImplicitlyDefined)
+                    || !isImplicitlyDefined)
+                {
+                    continue;
+                }
+
+                ImplicitPackageReferences.Add(packageReference.ItemSpec);
+            }
         }
 
         /// <summary>
@@ -148,6 +177,8 @@ namespace Microsoft.NET.Build.Tasks
                 }
 
                 var dependency = new PackageMetadata(packageDef);
+                dependency.IsImplicitlyDefined = ImplicitPackageReferences.Contains(dependency.Name);
+
                 Packages[packageDef.ItemSpec] = dependency;
             }
         }
@@ -160,7 +191,6 @@ namespace Microsoft.NET.Build.Tasks
             foreach (var fileDef in FileDefinitions)
             {
                 var dependencyType = GetDependencyType(fileDef.GetMetadata(MetadataKeys.Type));
-
                 if (dependencyType != DependencyType.Assembly &&
                     dependencyType != DependencyType.FrameworkAssembly &&
                     dependencyType != DependencyType.AnalyzerAssembly)
@@ -325,6 +355,7 @@ namespace Microsoft.NET.Build.Tasks
             public string Version { get; }
             public string Path { get; }
             public bool Resolved { get; }
+            public bool IsImplicitlyDefined { get; set; }
 
             public override IDictionary<string, string> ToDictionary()
             {
@@ -334,6 +365,7 @@ namespace Microsoft.NET.Build.Tasks
                     { MetadataKeys.Version, Version },
                     { MetadataKeys.Path, Path },
                     { MetadataKeys.Type, Type.ToString() },
+                    { MetadataKeys.IsImplicitlyDefined, IsImplicitlyDefined.ToString() },
                     { ResolvedMetadata, Resolved.ToString() },
                     { DependenciesMetadata, string.Join(";", Dependencies) }
                 };

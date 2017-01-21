@@ -188,6 +188,7 @@ Copyright (c) .NET Foundation. All rights reserved.
           FileDefinitions="@(FileDefinitions)"
           PackageDependencies="@(PackageDependencies)"
           FileDependencies="@(FileDependencies)"
+          PackageReferences="@(PackageReference)"
           InputDiagnosticMessages="@(DiagnosticMessages)">
 
       <Output TaskParameter="DependenciesDesignTime" ItemName="_DependenciesDesignTime" />

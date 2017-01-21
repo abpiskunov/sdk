@@ -12,6 +12,7 @@ namespace Microsoft.NET.Build.Tasks
         public const string FileGroup = "FileGroup";
         public const string Path = "Path";
         public const string ResolvedPath = "ResolvedPath";
+        public const string IsImplicitlyDefined = "IsImplicitlyDefined";
 
         // Target Metadata
         public const string RuntimeIdentifier = "RuntimeIdentifier";
