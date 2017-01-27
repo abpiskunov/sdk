@@ -258,7 +258,8 @@ namespace Microsoft.NET.Build.Tasks
 
                 var currentPackageUniqueId = $"{parentTargetId}/{currentItemId}";
                 // add current package to dependencies world
-                DependenciesWorld[currentPackageUniqueId] = items[currentItemId];
+                var currentItem = items[currentItemId];
+                DependenciesWorld[currentPackageUniqueId] = currentItem;
 
                 // update parent
                 var parentDependencyId = $"{parentTargetId}/{parentPackageId}".Trim('/');
@@ -266,6 +267,10 @@ namespace Microsoft.NET.Build.Tasks
                 if (DependenciesWorld.TryGetValue(parentDependencyId, out parentDependency))
                 {
                     parentDependency.Dependencies.Add(currentItemId);
+                    if (parentDependency.Type == DependencyType.Target)
+                    {
+                        currentItem.IsTopLevelDependency = true;
+                    }
                 }
                 else
                 {
@@ -277,6 +282,7 @@ namespace Microsoft.NET.Build.Tasks
                     else
                     {
                         parentDependency = Targets[parentTargetId];
+                        currentItem.IsTopLevelDependency = true;
                     }
 
                     parentDependency.Dependencies.Add(currentItemId);
@@ -294,6 +300,7 @@ namespace Microsoft.NET.Build.Tasks
             }
 
             public DependencyType Type { get; protected set; }
+            public bool IsTopLevelDependency { get; set; }
 
             /// <summary>
             /// A list of name/version strings to specify dependency identities.
@@ -366,6 +373,7 @@ namespace Microsoft.NET.Build.Tasks
                     { MetadataKeys.Path, Path },
                     { MetadataKeys.Type, Type.ToString() },
                     { MetadataKeys.IsImplicitlyDefined, IsImplicitlyDefined.ToString() },
+                    { MetadataKeys.IsTopLevelDependency, IsTopLevelDependency.ToString() },
                     { ResolvedMetadata, Resolved.ToString() },
                     { DependenciesMetadata, string.Join(";", Dependencies) }
                 };
